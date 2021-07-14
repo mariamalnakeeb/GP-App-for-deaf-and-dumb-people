@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "219702900326",
+    "firebase_url": "https://signlanguage-2c79c.firebaseio.com",
+    "project_id": "signlanguage-2c79c",
+    "storage_bucket": "signlanguage-2c79c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219702900326:android:9e8732734806411b3d9fa7",
+        "android_client_info": {
+          "package_name": "com.jack16.deaf_teacher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219702900326-9hqfvs2vskecmb35d65dbi66fjpo2oqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAcDa3MbWS9CXAZkjv70A_4zRZ8WWTTEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219702900326-9hqfvs2vskecmb35d65dbi66fjpo2oqt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
