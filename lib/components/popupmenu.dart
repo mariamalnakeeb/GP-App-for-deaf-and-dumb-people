@@ -1,8 +1,19 @@
+import 'package:deaf_teacher/Hello.dart';
+import 'package:deaf_teacher/userProfile.dart';
+import 'package:deaf_teacher/Notifications.dart';
+import 'package:deaf_teacher/Hello.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:deaf_teacher/main.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PopupMenuReusable extends StatelessWidget {
   PopupMenuReusable();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +33,15 @@ class PopupMenuReusable extends StatelessWidget {
                   SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    'الملف الشخصى',
-                    textAlign: TextAlign.center,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, userProfile.id);
+                      print("ملف شخصي");
+                    },
+                    child: Text(
+                      'الملف الشخصى',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               )),
@@ -38,9 +55,15 @@ class PopupMenuReusable extends StatelessWidget {
                   SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    'اشعارات',
-                    textAlign: TextAlign.center,
+                  GestureDetector(
+                    onTap: () {
+                      print('الاشعارات');
+                      Navigator.pushNamed(context, Notifications.id);
+                    },
+                    child: Text(
+                      'اشعارات',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               )),
@@ -54,31 +77,24 @@ class PopupMenuReusable extends StatelessWidget {
                   SizedBox(
                     width: 5,
                   ),
-                  Text('تسجيل خروج'),
+                  GestureDetector(
+                      onTap: () async {
+                        print("signout");
+                        await signOut();
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                      },
+                      child: Text('تسجيل خروج')),
                 ],
               )),
-              PopupMenuItem(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/logo.png'),
-                      fit: BoxFit.fitWidth,
-                      width: 50,
-                      alignment: Alignment.center,
-                    )
-                  ],
-                ),
-              )
             ]);
-    throw UnimplementedError();
   }
 }
 
 class ReusableNotificationWidget extends StatelessWidget {
-  ReusableNotificationWidget({@required this.content, @required this.number});
-  final String content;
-  final int number;
+  ReusableNotificationWidget({this.content, this.number});
+  final String? content;
+  final int? number;
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +112,10 @@ class ReusableNotificationWidget extends StatelessWidget {
           height: 5,
         ),
         Text(
-          content,
+          content!,
           style: TextStyle(color: Colors.white, fontSize: 15),
         ),
       ]),
     );
-    throw UnimplementedError();
   }
 }

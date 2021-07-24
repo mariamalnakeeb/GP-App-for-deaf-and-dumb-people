@@ -1,4 +1,6 @@
 // @dart=2.9
+import 'package:deaf_teacher/Dictionary.dart';
+import 'package:deaf_teacher/SearchByImage.dart';
 import 'package:deaf_teacher/ValidateWords.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +68,7 @@ class HomeWidget extends StatelessWidget {
                 ),
               ),
               GestureDetector(
+                onTap: () => Navigator.pushNamed(context, SearchByImage.id),
                 child: Image(
                   image: AssetImage("assets/Group 126.png"),
                 ),
@@ -78,6 +81,7 @@ class HomeWidget extends StatelessWidget {
                 onTap: () => Navigator.pushNamed(context, AddWord.id),
               ),
               GestureDetector(
+                onTap: () => Navigator.pushNamed(context, Dictionary.id),
                 child: Image(
                   image: AssetImage("assets/Group 129.png"),
                 ),

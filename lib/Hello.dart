@@ -10,77 +10,80 @@ class Hello extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              //flex: 2,
-              child: Container(
-                child: Image(
-                  width: double.infinity,
-                  image: AssetImage("assets/Home.png"),
-                ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage("assets/Home.png"),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 450,
               ),
-            ),
-            Container(
-              height: 50.0,
-              margin: EdgeInsets.all(10),
-              child: RaisedButton(
-                onPressed: () async {
-                  await Firebase.initializeApp();
-                  Navigator.pushNamed(context, SignUp.id);
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(80.0)),
-                padding: EdgeInsets.all(0.0),
-                child: Ink(
-                  decoration: BoxDecoration(
-                      color: Color(0xFFA2BFF7),
-                      borderRadius: BorderRadius.circular(30.0)),
-                  child: Container(
-                    constraints:
-                        BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "تسجيل حساب جديد",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+              Container(
+                height: 50.0,
+                margin: EdgeInsets.all(10),
+                child: RaisedButton(
+                  onPressed: () async {
+                    await Firebase.initializeApp();
+                    Navigator.pushNamed(context, SignUp.id);
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(80.0)),
+                  padding: EdgeInsets.all(0.0),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                        color: Color(0xFFA2BFF7),
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Container(
+                      constraints:
+                          BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "تسجيل حساب جديد",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Container(
-              height: 50.0,
-              margin: EdgeInsets.all(10),
-              child: RaisedButton(
-                onPressed: () async {
-                  await Firebase.initializeApp();
-                  Navigator.pushNamed(context, SignIn.id);
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(80.0)),
-                padding: EdgeInsets.all(0.0),
-                child: Ink(
-                  decoration: BoxDecoration(
-                      color: Color(0xFFA2BFF7), //Color(0xFFA4C9BE)
-                      borderRadius: BorderRadius.circular(30.0)),
-                  child: Container(
-                    constraints:
-                        BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      " تسجيل دخول ",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+              Container(
+                height: 50.0,
+                margin: EdgeInsets.all(10),
+                child: RaisedButton(
+                  onPressed: () async {
+                    await Firebase.initializeApp();
+                    Navigator.pushNamed(context, SignIn.id);
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(80.0)),
+                  padding: EdgeInsets.all(0.0),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                        color: Color(0xFFA2BFF7), //Color(0xFFA4C9BE)
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Container(
+                      constraints:
+                          BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        " تسجيل دخول ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

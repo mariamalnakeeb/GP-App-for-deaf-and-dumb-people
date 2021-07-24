@@ -64,142 +64,147 @@ class _SignInState extends State<SignIn> {
           backgroundColor: Color(0xFFA4C9BE),
           textTheme: TextTheme(),
         ),
-        body: ListView(children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(40, 15, 40, 0),
-            child: TextField(
-              controller: EmailController,
-              textAlign: TextAlign.left,
-              decoration: InputDecoration(
-                hintText: "enter your email",
-                hintStyle: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Tajawal',
-                  fontWeight: FontWeight.bold,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: ListView(children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 15, 40, 0),
+              child: TextField(
+                controller: EmailController,
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  hintText: "enter your email",
+                  hintStyle: TextStyle(
+                    fontSize: 14.0,
+                    fontFamily: 'Tajawal',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
                 ),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(40, 0, 40, 15),
-            child: Text(
-              vals[0],
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
-            child: TextField(
-              controller: PassController,
-              textAlign: TextAlign.left,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Enter your password",
-                hintStyle: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Tajawal',
-                  fontWeight: FontWeight.bold,
-                ),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 0, 40, 15),
+              child: Text(
+                vals[0],
+                style: TextStyle(color: Colors.red),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(40, 0, 40, 15),
-            child: Text(
-              vals[1],
-              style: TextStyle(color: Colors.red),
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
+              child: TextField(
+                controller: PassController,
+                textAlign: TextAlign.left,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Enter your password",
+                  hintStyle: TextStyle(
+                    fontSize: 14.0,
+                    fontFamily: 'Tajawal',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(140, 0, 140, 15),
-            child: Divider(
-              color: Colors.red,
-              height: 2,
-              thickness: 3.0,
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 0, 40, 15),
+              child: Text(
+                vals[1],
+                style: TextStyle(color: Colors.red),
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
-            height: 50.0,
-            margin: EdgeInsets.all(10),
-            child: RaisedButton(
-              onPressed: () async {
-                password = PassController.text;
-                email = EmailController.text;
-                EmailController.text = "";
-                PassController.text = "";
-                bool b = false;
-                setState(() {
-                  vals = ["", ""];
-                  b = checkVals(email: email!, pass: password!);
-                });
-                if (b) {
-                  try {
-                    print('email = $email');
-                    print('password = $password');
-                    await Firebase.initializeApp();
-                    await _auth
-                        .signInWithEmailAndPassword(
-                            email: email!, password: password!)
-                        .then((value) async {
-                      if (value.user != null) {
-                        HttpsCallable callable =
-                            FirebaseFunctions.instance.httpsCallable(
-                          'TypeOfUser',
-                        );
+            Padding(
+              padding: EdgeInsets.fromLTRB(140, 0, 140, 15),
+              child: Divider(
+                color: Colors.red,
+                height: 2,
+                thickness: 3.0,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(100, 0, 100, 0),
+              height: 50.0,
+              margin: EdgeInsets.all(10),
+              child: RaisedButton(
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  password = PassController.text;
+                  email = EmailController.text;
+                  EmailController.text = "";
+                  PassController.text = "";
+                  bool b = false;
+                  setState(() {
+                    vals = ["", ""];
+                    b = checkVals(email: email!, pass: password!);
+                  });
+                  if (b) {
+                    try {
+                      print('email = $email');
+                      print('password = $password');
+                      await Firebase.initializeApp();
+                      await _auth
+                          .signInWithEmailAndPassword(
+                              email: email!, password: password!)
+                          .then((value) async {
+                        if (value.user != null) {
+                          HttpsCallable callable =
+                              FirebaseFunctions.instance.httpsCallable(
+                            'TypeOfUser',
+                          );
 
-                        dynamic results = await callable();
-                        var map = Map<String, bool>.from(results.data);
-                        //    print('is he SystemAdmin ${map['SystemAdmin']!}');
-                        //  print('is he AppAdmin ${map['AppAdmin']!}');
-                        //print('is he AppUser ${map['AppUser']!}');
-                        if (map['SystemAdmin']!) {
-                          print("welcome System Admin");
-                          Navigator.pushNamed(context, SystemHome.id);
-                        } else if (map['AppAdmin']!) {
-                          Navigator.pushNamed(context, HomePageAdmin.id);
+                          dynamic results = await callable();
+                          var map = Map<String, bool>.from(results.data);
+                          //    print('is he SystemAdmin ${map['SystemAdmin']!}');
+                          //  print('is he AppAdmin ${map['AppAdmin']!}');
+                          //print('is he AppUser ${map['AppUser']!}');
+                          if (map['SystemAdmin']!) {
+                            print("welcome System Admin");
+                            Navigator.pushNamed(context, SystemHome.id);
+                          } else if (map['AppAdmin']!) {
+                            Navigator.pushNamed(context, HomePageAdmin.id);
+                          } else {
+                            Navigator.pushNamed(context, HomePage.id);
+                          }
+
+                          // }
                         } else {
-                          Navigator.pushNamed(context, HomePage.id);
+                          throw Error();
                         }
-
-                        // }
-                      } else {
-                        throw Error();
-                      }
-                    }).onError((error, stackTrace) {
-                      setState(() {
-                        vals[0] = "${error.toString()}";
-                        vals[1] = "Wrong Email or password";
+                      }).onError((error, stackTrace) {
+                        setState(() {
+                          vals[0] = "${error.toString()}";
+                          vals[1] = "Wrong Email or password";
+                        });
                       });
-                    });
-                  } catch (e) {
-                    print(e.toString());
+                    } catch (e) {
+                      print(e.toString());
+                    }
                   }
-                }
-              },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(80.0)),
-              padding: EdgeInsets.all(0.0),
-              child: Ink(
-                decoration: BoxDecoration(
-                    color: Color(0xFFA4C9BE),
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Container(
-                  constraints: BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "تسجيل دخول",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(80.0)),
+                padding: EdgeInsets.all(0.0),
+                child: Ink(
+                  decoration: BoxDecoration(
+                      color: Color(0xFFA4C9BE),
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Container(
+                    constraints:
+                        BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "تسجيل دخول",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-        ]));
+            )
+          ]),
+        ));
   }
 }

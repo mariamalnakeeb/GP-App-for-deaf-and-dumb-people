@@ -12,6 +12,13 @@ import 'sign_in.dart';
 import 'Sign_up.dart';
 import 'AddWord.dart';
 import 'SystemHome.dart';
+import 'package:deaf_teacher/SearchByImage.dart';
+import 'SearchByImageClasification.dart';
+import 'SearchByOCR.dart';
+import 'Dictionary.dart';
+import 'userProfile.dart';
+import 'ViewRequest.dart';
+import 'Notifications.dart';
 
 void main() {
   runApp(
@@ -22,12 +29,20 @@ void main() {
         HomePageAdmin.id: (context) => HomePageAdmin(),
         SignIn.id: (context) => SignIn(),
         SignUp.id: (context) => SignUp(),
+        userProfile.id: (context) => userProfile(),
+        Notifications.id: (context) => Notifications(),
         Hello.id: (context) => Hello(),
         AddWord.id: (context) => AddWord(),
+        Dictionary.id: (context) => Dictionary(),
+        SearchByImage.id: (context) => SearchByImage(),
+        SearchByImageClasification.id: (context) =>
+            SearchByImageClasification(),
+        SearchByOCR.id: (context) => SearchByOCR(),
         ValidateWords.id: (context) => ValidateWords(),
         SystemHome.id: (context) => SystemHome(),
         AddAdmin.id: (context) => AddAdmin(),
         RemoveAdmin.id: (context) => RemoveAdmin(),
+        ViewRequest.id: (context) => ViewRequest(),
       },
     ),
   );

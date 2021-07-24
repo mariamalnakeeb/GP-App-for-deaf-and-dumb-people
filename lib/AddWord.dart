@@ -1,11 +1,14 @@
+import 'package:deaf_teacher/Hello.dart';
 import 'package:deaf_teacher/uploader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
+import 'check.dart';
 
 class AddWord extends StatefulWidget {
   static String id = "AddWord";
@@ -18,13 +21,31 @@ class _AddWordState extends State<AddWord> {
   File? Videofile;
   File? GifFile;
   bool _saving = false;
+  bool isAdmin = false;
+  Widget need = Text(
+    " but need review by admins ",
+    style: TextStyle(fontSize: 20, color: Colors.black),
+  );
   List<Widget> childs = [];
+  final _auth = FirebaseAuth.instance;
   final _flutterVideoCompress = FlutterVideoCompress();
   Subscription? _subscription;
   double _progressState = 0;
+
+  var checker = check();
+  void checkauth() async {
+    bool val = await checker.doYouHaveRightPermission("AppAdmin");
+    bool val2 = await checker.doYouHaveRightPermission("AppUser");
+    if (!val && !val2) {
+      await _auth.signOut();
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    checkauth();
     _subscription =
         _flutterVideoCompress.compressProgress$.subscribe((progress) {
       setState(() {
@@ -95,6 +116,29 @@ class _AddWordState extends State<AddWord> {
     }
   }
 
+  void displayAlreadyUploaded() {
+    List<Widget> mylist = [
+      SizedBox(
+        height: 150,
+      ),
+      Center(
+        child: Text(
+          "word already exist ",
+          style: TextStyle(fontSize: 20, color: Colors.black),
+        ),
+      ),
+      SizedBox(
+        height: 5,
+      ),
+      SizedBox(
+        height: 5,
+      ),
+    ];
+    setState(() {
+      childs = mylist;
+    });
+  }
+
   void displayUploaded() {
     List<Widget> mylist = [
       SizedBox(
@@ -110,10 +154,7 @@ class _AddWordState extends State<AddWord> {
         height: 5,
       ),
       Center(
-        child: Text(
-          " but need review by admins ",
-          style: TextStyle(fontSize: 20, color: Colors.black),
-        ),
+        child: isAdmin == true ? Container() : need,
       ),
       SizedBox(
         height: 5,
@@ -164,9 +205,16 @@ class _AddWordState extends State<AddWord> {
             uploader tmp =
                 new uploader(file: GifFile, word: WordController.text);
             removeOld();
-            await tmp.upload();
-            displayUploaded();
-            restore();
+            bool exist = await tmp.alreadyAvailable();
+            if (!exist) {
+              isAdmin = await tmp.upload();
+
+              displayUploaded();
+              restore();
+            } else {
+              displayAlreadyUploaded();
+              restore();
+            }
           }
         },
         label: Text('upload'),

@@ -7,10 +7,10 @@ class ReusableCircularWidget extends StatelessWidget {
       @required this.color,
       @required this.number,
       @required this.widgetTxt});
-  final String widgetTxt;
-  final Color color;
-  final int number;
-  final double widgetWidth;
+  final String? widgetTxt;
+  final Color? color;
+  final int? number;
+  final double? widgetWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +28,19 @@ class ReusableCircularWidget extends StatelessWidget {
                 fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Text(
-            widgetTxt,
+            widgetTxt!,
             style: TextStyle(color: Colors.white, fontSize: 17),
           )
         ],
       ),
     );
-    throw UnimplementedError();
   }
 }
 
 class ReusableNotificationWidget extends StatelessWidget {
   ReusableNotificationWidget({@required this.content, @required this.number});
-  final String content;
-  final int number;
+  final String? content;
+  final int? number;
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +58,10 @@ class ReusableNotificationWidget extends StatelessWidget {
           height: 5,
         ),
         Text(
-          content,
+          content!,
           style: TextStyle(color: Colors.white, fontSize: 15),
         ),
       ]),
     );
-    throw UnimplementedError();
   }
 }

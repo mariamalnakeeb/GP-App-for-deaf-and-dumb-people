@@ -1,7 +1,11 @@
 import 'package:deaf_teacher/AddAdmin.dart';
+import 'package:deaf_teacher/Hello.dart';
 import 'package:deaf_teacher/RemoveAdmin.dart';
+import 'package:deaf_teacher/ViewRequest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SystemHome extends StatefulWidget {
   const SystemHome({Key? key}) : super(key: key);
@@ -11,10 +15,21 @@ class SystemHome extends StatefulWidget {
 }
 
 class _SystemHomeState extends State<SystemHome> {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.close),
+              color: Colors.black,
+              onPressed: () async {
+                await _auth.signOut();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }),
+        ],
         title: Center(
             child: Text(
           "Deaf Teacher",
@@ -25,7 +40,7 @@ class _SystemHomeState extends State<SystemHome> {
             fontFamily: 'Courier New',
           ),
         )),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFA4C9BE),
         textTheme: TextTheme(),
       ),
       body: SafeArea(
@@ -46,7 +61,7 @@ class _SystemHomeState extends State<SystemHome> {
                 ),
               ),
               SizedBox(
-                height: 300,
+                height: 200,
               ),
               RaisedButton(
                 onPressed: () {
@@ -92,6 +107,33 @@ class _SystemHomeState extends State<SystemHome> {
                     alignment: Alignment.center,
                     child: Text(
                       "Remove App Admin",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 70,
+              ),
+              RaisedButton(
+                onPressed: () {
+                  print('view Requests to be admins');
+                  Navigator.pushNamed(context, ViewRequest.id);
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(80.0)),
+                padding: EdgeInsets.all(0.0),
+                child: Ink(
+                  decoration: BoxDecoration(
+                      color: Color(0xFFA4C9BE),
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Container(
+                    constraints:
+                        BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "View Requests to be admins",
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white, fontSize: 15),
                     ),

@@ -1,11 +1,14 @@
 import 'package:deaf_teacher/AddWord.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'components/appBar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'Hello.dart';
+import 'check.dart';
 
 class EditWord extends StatefulWidget {
   EditWord({Key? key, @required this.word}) : super(key: key);
@@ -16,6 +19,7 @@ class EditWord extends StatefulWidget {
 }
 
 class _EditWordState extends State<EditWord> {
+  final _auth = FirebaseAuth.instance;
   final userCollections = FirebaseFirestore.instance.collection("users");
   final wordscollection = FirebaseFirestore.instance.collection("words");
   final pendingwordscollections =
@@ -25,6 +29,15 @@ class _EditWordState extends State<EditWord> {
   List<Widget> result = [];
   bool _saving = true;
   DocumentSnapshot? doc;
+  var checker = check();
+  void checkauth() async {
+    bool val = await checker.doYouHaveRightPermission("AppAdmin");
+    if (!val) {
+      await _auth.signOut();
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
   Future<bool> getWordLink(String word) async {
     DocumentSnapshot? snap = await pendingwordscollections.doc(word).get();
     if (!snap.exists || snap == null) {
@@ -102,11 +115,17 @@ class _EditWordState extends State<EditWord> {
               print('word rejected');
               var tmp = await userCollections.doc(doc!['userid']).get();
               if (tmp.exists && tmp != null) {
+                int rejected = int.parse(tmp.get('rejected'));
+                rejected++;
+                await userCollections
+                    .doc(doc!['userid'])
+                    .update({'rejected': rejected.toString()});
                 await userCollections
                     .doc(doc!['userid'])
                     .collection("notifications")
                     .add({
-                  'txt': 'the word ${doc!.id} has been rejected by admins..'
+                  'txt': 'the word ${doc!.id} has been rejected by admins..',
+                  'time': DateTime.now().toString()
                 });
               }
               setState(() {
@@ -144,11 +163,17 @@ class _EditWordState extends State<EditWord> {
                 print("word approved");
                 var tmp = await userCollections.doc(doc!['userid']).get();
                 if (tmp.exists && tmp != null) {
+                  int accepted = int.parse(tmp.get('accepted'));
+                  accepted++;
+                  await userCollections
+                      .doc(doc!['userid'])
+                      .update({'accepted': accepted.toString()});
                   await userCollections
                       .doc(doc!['userid'])
                       .collection("notifications")
                       .add({
-                    'txt': 'the word ${doc!.id} has been approved by admins ..'
+                    'txt': 'the word ${doc!.id} has been approved by admins ..',
+                    'time': DateTime.now().toString()
                   });
                 }
                 setState(() {
@@ -234,6 +259,7 @@ class _EditWordState extends State<EditWord> {
   @override
   void initState() {
     // TODO: implement initState
+    checkauth();
     doit();
     super.initState();
   }
@@ -241,20 +267,7 @@ class _EditWordState extends State<EditWord> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-            child: Text(
-          "Deaf Teacher",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Courier New',
-          ),
-        )),
-        backgroundColor: Colors.white,
-        textTheme: TextTheme(),
-      ),
+      appBar: AppBarReusable(),
       body: ModalProgressHUD(
         child: Column(
           children: result,

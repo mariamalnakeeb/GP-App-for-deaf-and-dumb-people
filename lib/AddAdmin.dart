@@ -115,8 +115,18 @@ class _AddAdminState extends State<AddAdmin> {
                       name: document.get('name'),
                       email: document.get('email'),
                       txt: 'Add user as Admin',
+                      numOfaccepted: document.get('accepted'),
+                      numOfrejected: document.get('rejected'),
                       onPressed: () async {
                         await setAppAdmin(document.id);
+                        await userCollections
+                            .doc(document.id)
+                            .collection("notifications")
+                            .add({
+                          'txt':
+                              'you become Admin user you can add words directly and validate new words ',
+                          'time': DateTime.now().toString()
+                        });
                         setState(() {
                           usersId!.remove(document.id);
                         });

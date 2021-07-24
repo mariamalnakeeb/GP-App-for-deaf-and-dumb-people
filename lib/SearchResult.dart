@@ -1,11 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:deaf_teacher/AddWord.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'components/appBar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'ShowChracters.dart';
+import 'Hello.dart';
+import 'check.dart';
 
 class SearchResult extends StatefulWidget {
   SearchResult({Key? key, @required this.word}) : super(key: key);
@@ -27,14 +34,40 @@ class _SearchResultState extends State<SearchResult> {
 
   final wordscollections = FirebaseFirestore.instance.collection("words");
   final _firebaseStorage = FirebaseStorage.instance.ref();
+  final _auth = FirebaseAuth.instance;
   String? path;
   List<Widget> result = [];
   bool _saving = true;
+  var checker = check();
+  void checkauth() async {
+    bool val = await checker.doYouHaveRightPermission("AppAdmin");
+    bool val2 = await checker.doYouHaveRightPermission("AppUser");
+    if (!val && !val2) {
+      await _auth.signOut();
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
   Future<bool> getWordLink(String word) async {
     DocumentSnapshot? snap = await wordscollections.doc(word).get();
     if (!snap.exists || snap == null) {
-      print("word you search for not found");
-      return false;
+      if (word.length < 4) return false;
+      if (word[0] == 'ا' &&
+          word[1] == 'ل' &&
+          word[2] != 'ا' &&
+          word[3] != 'ل') {
+        // fix for better search
+        String newword = word.substring(2);
+        print(newword);
+        setState(() {
+          widget.word = newword;
+        });
+        return getWordLink(newword);
+        //  getWordLink(newword);
+      } else {
+        print("word you search for not found");
+        return false;
+      }
     } else {
       String url = snap.get('link');
       String myWord = snap.get('word');
@@ -47,46 +80,45 @@ class _SearchResultState extends State<SearchResult> {
     }
   }
 
+  Future<Uint8List?> getImageBytes(String path) async {
+    Uint8List? data;
+    await _firebaseStorage
+        .child(path)
+        .getData(100000000)
+        .then((value) => data = value)
+        .catchError((error) {});
+    return data;
+  }
+
   Future<String> getImage(String path) async {
     String link = await _firebaseStorage.child(path).getDownloadURL();
     print('download link = ' + link);
     return link;
   }
 
-  List<Widget> buildFoundResult(String imageLink, String word) {
+  List<Widget> buildFoundResult(var imageLink, String word) {
     List<Widget> list = [];
-    // list.add(Image.network(imageLink, fit: BoxFit.fill));
     list.add(
-      Image.network(
+      Image.memory(
         imageLink,
+        height: 300,
         repeat: ImageRepeat.repeat,
         width: double.infinity,
         fit: BoxFit.fill,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Column(children: [
-            SizedBox(
-              height: 50,
-            ),
-            Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded.toDouble() /
-                        loadingProgress.expectedTotalBytes!.toDouble()
-                    : null,
-              ),
-            ),
-          ]);
-        },
       ),
     );
+    var converter = ShowCharacters(word: word);
+    Widget r = converter.convert();
     list.add(SizedBox(height: 20));
+    list.add(SafeArea(child: r));
+    list.add(SizedBox(
+      height: 10,
+    ));
     list.add(Center(
       child: Text(
         word,
         style: TextStyle(
-          fontSize: 30,
+          fontSize: 40,
           fontFamily: 'Jomhuria',
         ),
       ),
@@ -140,7 +172,8 @@ class _SearchResultState extends State<SearchResult> {
         _saving = false;
       });
     } else {
-      String? Imagelink = await getImage(path!);
+      // String? Imagelink = await getImage(path!);
+      Uint8List? Imagelink = await getImageBytes(path!);
       setState(() {
         result = buildFoundResult(Imagelink!, widget.word!);
         _saving = false;
@@ -150,17 +183,7 @@ class _SearchResultState extends State<SearchResult> {
 
   void initState() {
     // TODO: implement initState
-    // bool? isFound = await getWordLink(widget.word!);
-    // if (isFound == null || isFound != true) {
-    //   setState(() {
-    //     result = buildNotFoundResult();
-    //   });
-    // } else {
-    //   Imagelink = await getImage(path!);
-    //   setState(() {
-    //     result = buildFoundResult(Imagelink!, widget.word!);
-    //   });
-    // }
+    checkauth();
     doit();
     super.initState();
   }
@@ -168,22 +191,9 @@ class _SearchResultState extends State<SearchResult> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-            child: Text(
-          "Deaf Teacher",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Courier New',
-          ),
-        )),
-        backgroundColor: Colors.white,
-        textTheme: TextTheme(),
-      ),
+      appBar: AppBarReusable(),
       body: ModalProgressHUD(
-        child: Column(
+        child: ListView(
           children: result,
         ),
         inAsyncCall: _saving,

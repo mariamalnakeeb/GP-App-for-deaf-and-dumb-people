@@ -115,9 +115,19 @@ class _RemoveAdminState extends State<RemoveAdmin> {
                     resultList.add(User_info(
                       name: document.get('name'),
                       email: document.get('email'),
+                      numOfaccepted: document.get('accepted'),
+                      numOfrejected: document.get('rejected'),
                       txt: 'make Admin as user',
                       onPressed: () async {
                         await setAppUser(document.id);
+                        await userCollections
+                            .doc(document.id)
+                            .collection("notifications")
+                            .add({
+                          'txt':
+                              'sorry you lost your admin privilege and become normal user ',
+                          'time': DateTime.now().toString()
+                        });
                         setState(() {
                           usersId!.remove(document.id);
                         });
