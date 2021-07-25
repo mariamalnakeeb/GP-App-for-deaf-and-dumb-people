@@ -113,6 +113,13 @@ class _EditWordState extends State<EditWord> {
                 .delete()
                 .then((value) async {
               print('word rejected');
+              print('link to delete ' + doc!.get('link'));
+              String link = await _firebaseStorage
+                  .child(doc!.get('link'))
+                  .getDownloadURL();
+              FirebaseStorage.instance
+                  .refFromURL(link)
+                  .delete(); // delete the real image from storage
               var tmp = await userCollections.doc(doc!['userid']).get();
               if (tmp.exists && tmp != null) {
                 int rejected = int.parse(tmp.get('rejected'));
